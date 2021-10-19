@@ -1,18 +1,16 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0.100-rc.2 AS build
 
 WORKDIR /source
 
-# copy and restore
-COPY *.csproj ./aspnetapp/
+# Copy and restore
+COPY *.csproj ./
 RUN dotnet restore
 
-# build and publish project
-COPY aspnetapp/. ./aspnetapp/
-WORKDIR /source/aspnetapp
+# Build and publish project
+COPY ./* ./
 RUN dotnet publish -c release -o /app --no-restore
 
-
-# final image
+# Create final image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-bullseye-slim
 WORKDIR /app
 COPY --from=build /app .
